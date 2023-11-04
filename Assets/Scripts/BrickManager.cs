@@ -12,10 +12,16 @@ public class BrickManager : MonoBehaviour
 
     SpriteRenderer sprite;
 
+    [SerializeField]
+    ParticleSystem brickHitParticles;
+
     void Start()
     {
         sprite = GetComponent<SpriteRenderer>();        //riferimento alla componente SpriteRenderer dell'oggetto (è quella che ci permette di cambiare colore al nostro oggetto)
-        ChangeColorOnLife();    
+        ChangeColorOnLife();
+
+
+
     }
 
     void Update()
@@ -29,8 +35,14 @@ public class BrickManager : MonoBehaviour
         {
             hitPoints--;
             ChangeColorOnLife();
+            brickHitParticles.Play();
 
-            if(hitPoints<=0) 
+            Vector3 collisionPoint = new Vector3(collision.contacts[0].point.x, collision.contacts[0].point.y);         //Ricavo la direzione in cui il brick viene colpito 
+            Vector3 ballDirection = collision.transform.position - collisionPoint;
+            brickHitParticles.transform.rotation = Quaternion.LookRotation(ballDirection.normalized,Vector3.back);                 //cambio la direzione delle particles in base alla direzione della collisione ricavata prima
+            brickHitParticles.transform.position = collisionPoint;                      //particles nella posizione esatta della collisione
+            
+                if(hitPoints<=0) 
             {
                 Gamemanager.gamemanager.BrickDestroyed();
                 Destroy(gameObject);
@@ -55,5 +67,8 @@ public class BrickManager : MonoBehaviour
                 sprite.color = oneLifeColor;
                 break;
         }
+
+        ParticleSystem.MainModule particleModule = brickHitParticles.main;
+        particleModule.startColor = sprite.color;
     }
 }

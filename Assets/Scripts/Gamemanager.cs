@@ -12,8 +12,15 @@ public class Gamemanager : MonoBehaviour                    //tale script per ge
     bool gameStart = false, gameOver = false;
     int spawnedBricks = 0;
 
+    GameObject Bar;
+    [SerializeField]
+    GameObject explosionEffect;
 
+    [SerializeField]
+    AudioSource VictorySound;
 
+    [SerializeField]
+    AudioSource RestartSound;
 
     private void Awake()
     {
@@ -48,6 +55,7 @@ public class Gamemanager : MonoBehaviour                    //tale script per ge
 
      void ResetGameScene()                                               //metodo che mi aggiunge e/o toglie ogni volta la scena "GameScene"
     {
+        RestartSound.Play();
         if (SceneManager.GetSceneByName("GameScene").name == "GameScene")
         {
             SceneManager.UnloadScene("GameScene");
@@ -64,6 +72,13 @@ public class Gamemanager : MonoBehaviour                    //tale script per ge
 
   public void GameOver()
     {
+        if (Bar == null)                                                         
+        {
+            Bar = GameObject.FindGameObjectWithTag("Bar");
+        }
+        GameObject.Instantiate(explosionEffect, Bar.transform.position, Quaternion.identity, Bar.transform);        //instanzio la particles dell'esplosione 
+        Bar.GetComponent<SpriteRenderer>().enabled = false;                                     //faccio scomparire la barra (non devo riabilitarla, tanto verra resettata la scena)
+
         gameOver = true;
         gameOverPanel.SetActive(true);
     }
@@ -71,6 +86,7 @@ public class Gamemanager : MonoBehaviour                    //tale script per ge
     void GameWon()
         {
             Destroy(ball.gameObject);
+            VictorySound.Play();
             gameWonPanel.SetActive(true);
             gameOver = true;
     }

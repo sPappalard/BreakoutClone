@@ -8,6 +8,12 @@ public class BallController : MonoBehaviour
 
     [SerializeField]
     float ballSpeed = 10f;
+
+    [SerializeField]
+    AudioSource ballSound;
+    [SerializeField]
+    AudioSource deathSound;
+
     void Start()
     {
         body = GetComponent<Rigidbody2D>();
@@ -30,11 +36,17 @@ public class BallController : MonoBehaviour
     }
     //così facendo ottengo un vettore con direzione della velocità e intensità pari a ballSpeed    
 
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        ballSound.Play();
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if(collision.gameObject.tag == "Death")
         {
             Gamemanager.gamemanager.GameOver();         //classe.istanza.funzione()
+            deathSound.Play();
         }
     }
 
